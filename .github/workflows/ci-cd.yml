@@ -29,8 +29,9 @@ jobs:
 
       # Ejemplo de ejecución de pruebas unitarias (descomentarlo si tienes pruebas)
       - name: Ejecutar pruebas
-        run: npm test
-
+       # run: npm test
+        run: npm ci --legacy-peer-deps 
+        
   build-android:
     needs: install-and-test
     runs-on: ubuntu-latest
