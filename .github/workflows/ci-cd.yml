@@ -29,9 +29,8 @@ jobs:
 
       # Ejemplo de ejecución de pruebas unitarias (descomentarlo si tienes pruebas)
       - name: Ejecutar pruebas
-       # run: npm test por si acaso carajo
-        run: npm ci --legacy-peer-deps 
-        
+        run: npm ci --legacy-peer-deps  # o "npm test" si tienes pruebas
+
   build-android:
     needs: install-and-test
     runs-on: ubuntu-latest
@@ -47,6 +46,10 @@ jobs:
 
       - name: Instalar dependencias
         run: npm ci --legacy-peer-deps
+
+      # Verificar que el directorio 'android' existe
+      - name: Verificar directorios
+        run: ls -R
 
       - name: Instalar dependencias de Android
         run: |
@@ -69,6 +72,8 @@ jobs:
     steps:
       - name: Checkout código
         uses: actions/checkout@v3
+        with:
+          submodules: true  # Asegurarse de que los submódulos se descarguen si es necesario
 
       # Desplegar en el entorno que prefieras (en este ejemplo es en GitHub Pages, pero puedes cambiarlo)
       - name: Desplegar en GitHub Pages
