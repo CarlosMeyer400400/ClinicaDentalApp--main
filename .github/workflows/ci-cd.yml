@@ -1,0 +1,66 @@
+name: PWA CI/CD Workflow Aplicacion Movil
+
+on:
+  push:
+    branches:
+      - master
+      - main
+  pull_request:
+    branches:
+      - master
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout del código fuente
+      - name: Checkout código
+        uses: actions/checkout@v4.2.1
+
+      # Configuración de Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.X'
+
+      # Instalación de dependencias de Node.js con legacy-peer-deps
+      - name: Instalar dependencias
+        run: npm ci --legacy-peer-deps
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      # Checkout del código fuente
+      - name: Checkout código
+        uses: actions/checkout@v4.2.1
+
+      # Configuración de Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.X'
+
+      # Instalación de dependencias con legacy-peer-deps
+      - name: Instalar dependencias
+        run: npm ci --legacy-peer-deps
+
+      # Ejecutar pruebas unitarias
+      - name: Ejecutar pruebas
+        run: npm test
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4.2.1
+
+      # Construcción y despliegue (ejemplo de despliegue en GitHub Pages)
+      - name: Desplegar en GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
