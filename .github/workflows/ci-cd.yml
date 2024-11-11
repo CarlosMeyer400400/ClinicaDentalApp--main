@@ -29,7 +29,7 @@ jobs:
 
       # Ejemplo de ejecución de pruebas unitarias (descomentarlo si tienes pruebas)
       - name: Ejecutar pruebas
-       # run: npm test
+       # run: npm test por si acaso
         run: npm ci --legacy-peer-deps 
         
   build-android:
