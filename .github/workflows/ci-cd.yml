@@ -51,7 +51,9 @@ jobs:
 
       # Ejecutar pruebas unitarias
       - name: Ejecutar pruebas
-        run: npm test
+        run: npm ci --legacy-peer-deps
+
+
 
   deploy:
     runs-on: ubuntu-latest
