@@ -63,6 +63,6 @@ jobs:
       - name: Checkout código
         uses: actions/checkout@v4.2.1
 
-      # Construcción y despliegue (ejemplo de despliegue en GitHub Pages) hoola mundo carlos
+      # Construcción y despliegue (ejemplo de despliegue en GitHub Pages) 
       - name: Desplegar en GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
