@@ -44,6 +44,19 @@ jobs:
         with:
           node-version: '18.x'
 
+      - name: Configurar el entorno de Android
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y openjdk-11-jdk
+          wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O android-commandline-tools.zip
+          mkdir -p $HOME/android-sdk/cmdline-tools
+          unzip -q android-commandline-tools.zip -d $HOME/android-sdk/cmdline-tools
+          mv $HOME/android-sdk/cmdline-tools/cmdline-tools $HOME/android-sdk/cmdline-tools/latest
+          export ANDROID_HOME=$HOME/android-sdk
+          export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH
+          sdkmanager --install "platform-tools" "platforms;android-33" "build-tools;33.0.2" "cmdline-tools;latest"
+          yes | sdkmanager --licenses
+
       - name: Instalar dependencias
         run: npm ci --legacy-peer-deps
 
@@ -51,13 +64,13 @@ jobs:
       - name: Verificar directorios
         run: ls -R
 
-      - name: Instalar dependencias de Android
+      - name: Limpiar el proyecto con Gradle
         run: |
-          cd android && ./gradlew clean
+          cd android && ./gradlew clean --stacktrace
 
       - name: Construir APK de Android Release
         run: |
-          cd android && ./gradlew assembleRelease
+          cd android && ./gradlew assembleRelease --stacktrace
 
       - name: Subir APK como artefacto
         uses: actions/upload-artifact@v3
