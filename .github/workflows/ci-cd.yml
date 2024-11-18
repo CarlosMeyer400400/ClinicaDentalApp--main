@@ -1,52 +1,38 @@
-name: EAS Build Android APK
+name: Android Build Workflow
 
 on:
   push:
     branches:
-      - master
       - main
-  pull_request:
-    branches:
       - master
-      - main
   workflow_dispatch:
 
 jobs:
-  build-android:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout del código
-      - name: Checkout código
+      # Paso 1: Clonar el repositorio
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      # Configuración de Node.js
-      - name: Configurar Node.js
+      # Paso 2: Configurar Node.js (para proyectos React Native/Expo)
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18.x'
+          node-version: '18'
 
-      # Instalación de EAS CLI
-      - name: Instalar EAS CLI
+      # Paso 3: Instalar EAS CLI
+      - name: Install EAS CLI
         run: npm install -g eas-cli
 
-      # Autenticar en Expo con el token HOLA
-      - name: Autenticar en Expo
-        run: eas login --token ${{ secrets.HOLA }}
+      # Paso 4: Instalar dependencias del proyecto
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      # Paso 5: Construir el APK para Android
+      - name: Build APK for Android
+        run: |
+          eas build --platform android --profile preview
         env:
-         EXPO_TOKEN: ${{ secrets.HOLA }}
-
-
-      # Configuración de EAS
-      - name: Configurar EAS
-        run: eas build:configure
-
-      # Construir el APK con EAS Build
-      - name: Construir APK de Android
-        run: |
-          eas build -p android --profile preview --clear-cache
-
-      # Publicar enlace del APK JSJS
-      - name: Publicar enlace del APK
-        run: |
-          echo "Busca el APK en tu cuenta de Expo: 
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}  # Token de autenticación de Expo
