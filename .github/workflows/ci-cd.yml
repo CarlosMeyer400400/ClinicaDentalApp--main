@@ -16,7 +16,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Paso 2: Configurar Node.js (para proyectos React Native/Expo)
+      # Paso 2: Configurar Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
@@ -33,6 +33,6 @@ jobs:
       # Paso 5: Construir el APK para Android
       - name: Build APK for Android
         run: |
-          eas build --platform android --profile preview
+          eas build --platform android --profile preview --non-interactive
         env:
-          EXPO_TOKEN: ${{ secrets.TOKEN_EXPO }}  # Token de autenticación de Expo
+          EXPO_TOKEN: ${{ secrets.TOKEN_EXPO }}
