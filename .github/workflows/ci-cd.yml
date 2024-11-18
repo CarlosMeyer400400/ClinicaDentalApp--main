@@ -1,4 +1,4 @@
-name: React Native Android Build APK
+name: EAS Build Android APK
 
 on:
   push:
@@ -12,82 +12,38 @@ on:
   workflow_dispatch:
 
 jobs:
-  install-and-test:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout código
-        uses: actions/checkout@v3
-
-      - name: Configurar Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18.x'
-
-      - name: Instalar dependencias
-        run: npm ci --legacy-peer-deps
-
-      # Ejemplo de ejecución de pruebas unitarias (descomentarlo si tienes pruebas)
-      - name: Ejecutar pruebas
-        run: npm ci --legacy-peer-deps  # o "npm test" si tienes pruebas
-
   build-android:
-    needs: install-and-test
     runs-on: ubuntu-latest
 
     steps:
+      # Checkout del código
       - name: Checkout código
         uses: actions/checkout@v3
 
+      # Configuración de Node.js
       - name: Configurar Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18.x'
 
-      - name: Configurar el entorno de Android
+      # Instalación de EAS CLI
+      - name: Instalar EAS CLI
+        run: npm install -g eas-cli
+
+      # Autenticar en Expo
+      - name: Autenticar en Expo
+        run: eas login --token ${{ secrets.HOLA }}
+
+      # Configurar EAS
+      - name: Configurar EAS
+        run: eas build:configure
+
+      # Construir el APK con EAS Build
+      - name: Construir APK de Android
         run: |
-          sudo apt-get update -y
-          sudo apt-get install -y openjdk-11-jdk
-          wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O android-commandline-tools.zip
-          mkdir -p $HOME/android-sdk/cmdline-tools
-          unzip -q android-commandline-tools.zip -d $HOME/android-sdk/cmdline-tools
-          mv $HOME/android-sdk/cmdline-tools/cmdline-tools $HOME/android-sdk/cmdline-tools/latest
-          export ANDROID_HOME=$HOME/android-sdk
-          export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH
-          sdkmanager --install "platform-tools" "platforms;android-33" "build-tools;33.0.2" "cmdline-tools;latest"
-          yes | sdkmanager --licenses
+          eas build -p android --profile preview --clear-cache
 
-      - name: Instalar dependencias
-        run: npm ci --legacy-peer-deps
-
-      # Verificar que el directorio 'android' existe
-      - name: Verificar directorios
-        run: ls -R
-
-      - name: Limpiar el proyecto con Gradle
+      # Publicar enlace del APK
+      - name: Publicar enlace del APK
         run: |
-          cd android && ./gradlew clean --stacktrace
-
-      - name: Construir APK de Android Release
-        run: |
-          cd android && ./gradlew assembleRelease --stacktrace
-
-      - name: Subir APK como artefacto
-        uses: actions/upload-artifact@v3
-        with:
-          name: app-release.apk
-          path: android/app/build/outputs/apk/release/app-release.apk
-
-  deploy:
-    needs: build-android
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout código
-        uses: actions/checkout@v3
-        with:
-          submodules: true  # Asegurarse de que los submódulos se descarguen si es necesario
-
-      # Desplegar en el entorno que prefieras (en este ejemplo es en GitHub Pages, pero puedes cambiarlo)
-      - name: Desplegar en GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+          echo "Busca el APK en tu cuenta de Expo: https://expo.dev/accounts/meyyerr/builds"
