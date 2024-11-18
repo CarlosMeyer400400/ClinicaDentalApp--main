@@ -33,6 +33,9 @@ jobs:
       # Autenticar en Expo con el token HOLA
       - name: Autenticar en Expo
         run: eas login --token ${{ secrets.HOLA }}
+        env:
+         EXPO_TOKEN: ${{ secrets.HOLA }}
+
 
       # Configuración de EAS
       - name: Configurar EAS
