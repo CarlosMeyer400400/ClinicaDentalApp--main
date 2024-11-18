@@ -332,4 +332,39 @@ export const createContacto = async (createContactoDto) => {
     console.error('Error creando contacto', error);
     throw error;
   }
+  
+};
+
+// Servicio para crear feedback
+export const createFeedback = async (data, id) => {
+  try {
+    const response = await axios.post(`${url}auth/feedback/${id}`, data);
+    return response.data; // Retorna { message, status }
+  } catch (error) {
+    console.error('Error creando feedback', error);
+    throw error;
+  }
+};
+
+// Servicio para obtener estadísticas de feedback
+export const getFeedbackStats = async () => {
+  try {
+    const response = await axios.get(`${url}auth/feedback/stats`);
+    return response.data; // Retorna las estadísticas de feedback
+  } catch (error) {
+    console.error('Error obteniendo estadísticas de feedback', error);
+    throw error;
+  }
+};
+
+
+// Servicio para obtener un feedback específico
+export const getFeedback = async () => {
+  try {
+    const response = await axios.get(`${url}auth/feedback/1`);
+    return response.data; // Retorna un array de objetos DataFeedback
+  } catch (error) {
+    console.error('Error obteniendo feedback', error);
+    throw error;
+  }
 };

@@ -118,14 +118,23 @@ const EditarPerfil = ({ navigation }) => {
           <InputField label="Teléfono" value={telefono} onChangeText={setTelefono} keyboardType="phone-pad" />
           <InputField label="Nombre de Usuario" value={nombreu} onChangeText={setNombreu} />
           {/* Botón personalizado para Actualizar Datos */}
-          <TouchableOpacity style={styles.updateButton} onPress={handleUpdate}>
-            <Text style={styles.buttonText}>Actualizar Datos</Text>
-          </TouchableOpacity>
+          <TouchableOpacity 
+  style={styles.updateButton} 
+  onPress={() => {
+    handleUpdate();  // Llama a la función que actualiza los datos
+    navigation.navigate('Main', { screen: 'Perfil' });  // Navega a la pantalla Perfil dentro de Main
+  }}
+>
+  <Text style={styles.buttonText}>Actualizar Datos</Text>
+</TouchableOpacity>
 
           {/* Botón solo con ícono de Home */}
-          <TouchableOpacity style={styles.homeIconButton} onPress={() => navigation.navigate('Home')}>
-            <Icon name="home" size={40} color="#O492C2" />
-          </TouchableOpacity>
+          <TouchableOpacity 
+  style={styles.homeIconButton} 
+  onPress={() => navigation.navigate('Main', { screen: 'Home' })}
+>
+  <Icon name="home" size={40} color="#0492C2" />
+</TouchableOpacity>
 
         </>
       )}

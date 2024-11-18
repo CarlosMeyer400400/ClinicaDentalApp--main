@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
-import { addCita, getServicios } from '../services/LoginService';
+import { addCita, getServicios, createFeedback, getFeedback } from '../services/LoginService';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { CardField, useStripe } from '@stripe/stripe-react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-const Agendar = () => {
+const Agendar = ({ navigation }) => {
   const [fecha, setFecha] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [hora, setHora] = useState('');
@@ -16,7 +16,9 @@ const Agendar = () => {
   const [servicios, setServicios] = useState([]);
   const { confirmPayment } = useStripe();
   const [cardDetails, setCardDetails] = useState({});
-  const [paymentMethod, setPaymentMethod] = useState('cash'); // New state for payment method
+  const [paymentMethod, setPaymentMethod] = useState('cash');
+  const [showFeedbackForm, setShowFeedbackForm] = useState(false);
+  const [feedback, setFeedback] = useState('');
 
   useEffect(() => {
     getServicios().then(data => setServicios(data)).catch(error => console.error(error));
@@ -52,9 +54,11 @@ const Agendar = () => {
 
       if (response.status === 200) {
         if (paymentMethod === 'card') {
-          handlePayment(); // Only call payment if using card
+          handlePayment(); // Solo llamar al pago si se usa tarjeta
         } else {
           Alert.alert('Cita agendada con éxito');
+          resetForm(); // Limpiar formulario después de agendar
+          setShowFeedbackForm(true); // Mostrar formulario de feedback
         }
       }
     } catch (error) {
@@ -76,11 +80,58 @@ const Agendar = () => {
         Alert.alert(`Error de pago: ${error.message}`);
       } else if (paymentIntent) {
         Alert.alert('Pago realizado con éxito', `ID de Pago: ${paymentIntent.id}`);
+        resetForm(); // Limpiar formulario después del pago
+        setShowFeedbackForm(true); // Mostrar formulario de feedback
       }
     } catch (error) {
       console.error(error);
       Alert.alert('Error al realizar el pago');
     }
+  };
+
+  const handleFeedbackSubmit = async () => {
+    if (!feedback) {
+      Alert.alert('Error', 'Por favor selecciona tu opinión.');
+      return;
+    }
+
+    try {
+      const idByToken = await AsyncStorage.getItem('token');
+      if (!idByToken) {
+        Alert.alert('Error', 'No se encontró el token de autenticación');
+        return;
+      }
+
+      const data = { respuesta: feedback };
+      const feedbackResponse = await createFeedback(data, idByToken);
+
+      if (feedbackResponse.status === 200) {
+        console.log('si jalo');
+        Alert.alert('Gracias por responder el feedback', '', [
+          {
+            text: 'Ir al Home',
+            onPress: () => {
+              setShowFeedbackForm(false); // Ocultar formulario de feedback
+              setFeedback(''); // Resetear feedback
+              navigation.navigate('Home'); // Navegar al Home
+            },
+          },
+        ]);
+        console.log('Feedback enviado exitosamente'); // Mensaje en consola cuando el feedback se envía correctamente
+      }
+    } catch (error) {
+      console.error('Error enviando feedback', error);
+      Alert.alert('Error', 'Ocurrió un problema al enviar tu retroalimentación');
+    }
+  };
+
+  const resetForm = () => {
+    setFecha(new Date());
+    setHora('');
+    setSelectedServicio('');
+    setDentista('');
+    setPaymentMethod('cash');
+    setCardDetails({});
   };
 
   const onChangeDate = (event, selectedDate) => {
@@ -144,7 +195,6 @@ const Agendar = () => {
         <Picker.Item label="Steven Univers" value="Steven Univers" />
       </Picker>
 
-      {/* Payment Method Picker */}
       <Picker
         selectedValue={paymentMethod}
         onValueChange={(itemValue) => setPaymentMethod(itemValue)}
@@ -168,6 +218,32 @@ const Agendar = () => {
         <Icon name="check" size={20} color="#ffffff" />
         <Text style={styles.submitButtonText}>Agendar</Text>
       </TouchableOpacity>
+
+      {showFeedbackForm && (
+        <View style={styles.feedbackContainer}>
+          <Text style={styles.title}>Tu opinión</Text>
+          <Picker
+            selectedValue={feedback}
+            onValueChange={(itemValue) => setFeedback(itemValue)}
+            style={styles.picker}
+          >
+            <Picker.Item label="Selecciona una opción" value="" />
+            <Picker.Item label="Buena" value="bueno" />
+            <Picker.Item label="Regular" value="regular" />
+            <Picker.Item label="Mala" value="malo" />
+          </Picker>
+          <TouchableOpacity
+  style={styles.submitButton}
+  onPress={() => {
+    handleFeedbackSubmit();  // Llama a la función que maneja el feedback
+    navigation.navigate('Main', { screen: 'Home' });  // Navega a la pantalla Home
+    Alert.alert("Gracias por tu opinión"); // Muestra la alerta
+  }}
+>
+  <Text style={styles.submitButtonText}>Enviar Feedback</Text>
+</TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 };
@@ -231,6 +307,11 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 16,
     marginLeft: 10,
+  },
+  feedbackContainer: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: '#f5f5f5',
   },
 });
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, FlatList, StyleSheet, ActivityIndicator, Image } from 'react-native';
+import { View, Text, Button, FlatList, StyleSheet, ActivityIndicator, Image, TouchableOpacity } from 'react-native';
 import { getServicios } from '../services/LoginService'; // Asegúrate de que la ruta sea correcta
 
 const Home = ({ navigation }) => {
@@ -41,7 +41,10 @@ const Home = ({ navigation }) => {
         data={servicios}
         keyExtractor={(item) => item.id_servicio.toString()} // Asegúrate de que el ID sea único
         renderItem={({ item }) => (
-          <View style={styles.serviceItem}>
+          <TouchableOpacity
+            style={styles.serviceItem}
+            onPress={() => navigation.navigate('Agendar')} // Navegar a Agendar
+          >
             <Text style={styles.serviceName}>{item.nombre}</Text>
             <Text style={styles.serviceCost}>${item.costo}</Text>
             {/* Componente de imagen */}
@@ -52,8 +55,7 @@ const Home = ({ navigation }) => {
             <Text style={styles.serviceDescription}>{item.descripcion}</Text>
 
             <Button title="Agendar" onPress={() => navigation.navigate('Agendar')} color="#59788E" />
-
-          </View>
+          </TouchableOpacity>
         )}
       />
     </View>
@@ -70,10 +72,6 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 10,
-  },
-  subtitle: {
-    fontSize: 18,
-    marginBottom: 20,
   },
   serviceItem: {
     backgroundColor: '#ffffff',

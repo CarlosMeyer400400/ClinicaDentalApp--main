@@ -80,9 +80,6 @@ const HeaderMenu = ({ navigation }) => {
       <MenuItem onPress={() => { hideMenu(); navigation.navigate('QuienesSomos'); }}>Quienes Somos</MenuItem>
       <MenuItem onPress={() => { hideMenu(); navigation.navigate('AvisoPrivacidad'); }}>Privacidad</MenuItem>
       <MenuItem onPress={() => { hideMenu(); navigation.navigate('Juego'); }}>Juego</MenuItem>
-
-
-
       <MenuDivider />
       <MenuItem 
           onPress={() => { 
@@ -111,6 +108,7 @@ const App = () => {
           <Stack.Screen name="Register" component={Register} />
           <Stack.Screen name="Recuperar" component={Recuperar} />
 
+          {/* Usa "Main" para el TabNavigator */}
           <Stack.Screen
             name="Main"
             component={TabNavigator}
@@ -137,7 +135,7 @@ const App = () => {
             })}
           />
 
-<Stack.Screen 
+          <Stack.Screen 
             name="Agendar" 
             component={Agendar} 
             options={{
@@ -180,11 +178,11 @@ const App = () => {
                 color: '#ffffff',
               },
               headerStyle: {
-                backgroundColor: '#283e51', // Main color for header
+                backgroundColor: '#283e51',
                 elevation: 0,
                 shadowOpacity: 0,
               },
-              headerTintColor: '#ffffff', // White color for back button
+              headerTintColor: '#ffffff',
             }}
           />
 
@@ -205,7 +203,7 @@ const App = () => {
             }}
           />
 
-        <Stack.Screen
+          <Stack.Screen
             name="Juego"
             component={Juego}
             options={{
@@ -222,8 +220,6 @@ const App = () => {
             }}
           />
         </Stack.Navigator>
-
-
       </NavigationContainer>
     </StripeProvider>
   );
