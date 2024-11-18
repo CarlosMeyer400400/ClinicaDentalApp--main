@@ -30,7 +30,7 @@ jobs:
       - name: Instalar EAS CLI
         run: npm install -g eas-cli
 
-      # Autenticar en Expo
+      # Autenticar en Expo CON HOLA
       - name: Autenticar en Expo
         run: eas login --token ${{ secrets.HOLA }}
 
